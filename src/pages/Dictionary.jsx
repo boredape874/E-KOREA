@@ -3,15 +3,6 @@ import glossaryRaw from '../data/glossary.json'
 import TermCard from '../components/TermCard'
 import './Dictionary.css'
 
-const CATEGORY_COLORS = {
-  '경영': { bg: '#EFF6FF', border: '#2563EB', text: '#1D4ED8' },
-  '경제': { bg: '#F0FDF4', border: '#16A34A', text: '#15803D' },
-  '금융': { bg: '#FFF7ED', border: '#EA580C', text: '#C2410C' },
-  '공공': { bg: '#F5F3FF', border: '#7C3AED', text: '#6D28D9' },
-  '과학': { bg: '#FEFCE8', border: '#CA8A04', text: '#A16207' },
-  '사회': { bg: '#FEF2F2', border: '#DC2626', text: '#B91C1C' },
-}
-
 const CATEGORIES = ['전체', '경영', '경제', '금융', '공공', '과학', '사회']
 const PAGE_SIZE = 20
 
@@ -95,11 +86,6 @@ export default function Dictionary() {
           <button
             key={cat}
             className={`cat-btn${category === cat ? ' active' : ''}`}
-            style={category === cat && cat !== '전체' ? {
-              background: CATEGORY_COLORS[cat].bg,
-              borderColor: CATEGORY_COLORS[cat].border,
-              color: CATEGORY_COLORS[cat].text
-            } : {}}
             onClick={() => handleCategory(cat)}
           >
             {cat}
@@ -135,7 +121,6 @@ export default function Dictionary() {
             <TermCard
               key={item.id}
               item={item}
-              color={CATEGORY_COLORS[item.category]}
               expanded={expanded === item.id}
               onToggle={() => setExpanded(expanded === item.id ? null : item.id)}
               highlight={search.trim()}

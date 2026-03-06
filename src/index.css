@@ -18,14 +18,6 @@
   --yellow:       #f59f00;
   --yellow-light: #fff9db;
 
-  /* Category colors (kept for badges) */
-  --cat-경영-bg:   #EFF6FF; --cat-경영-border: #2563EB; --cat-경영-text: #1D4ED8;
-  --cat-경제-bg:   #F0FDF4; --cat-경제-border: #16A34A; --cat-경제-text: #15803D;
-  --cat-금융-bg:   #FFF7ED; --cat-금융-border: #EA580C; --cat-금융-text: #C2410C;
-  --cat-공공-bg:   #F5F3FF; --cat-공공-border: #7C3AED; --cat-공공-text: #6D28D9;
-  --cat-과학-bg:   #FEFCE8; --cat-과학-border: #CA8A04; --cat-과학-text: #A16207;
-  --cat-사회-bg:   #FEF2F2; --cat-사회-border: #DC2626; --cat-사회-text: #B91C1C;
-
   /* Neutrals */
   --bg:        rgba(33, 37, 41, 0.028);
   --white:     #ffffff;

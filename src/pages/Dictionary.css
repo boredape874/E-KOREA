@@ -54,7 +54,7 @@
 .search-clear:hover { background: var(--border); }
 .search-clear svg { width: 13px; height: 13px; }
 
-/* ── Category ── */
+/* ── Category filter — AgentBlog Hashtag style ── */
 .cat-bar {
   display: flex;
   flex-wrap: wrap;
@@ -66,31 +66,33 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background: var(--white);
-  font-size: 13px;
+  height: 2rem;
+  padding: 0 1rem;
+  background: rgb(241, 243, 245);
+  border: none;
+  border-radius: 1rem;
+  font-size: 0.9375rem;
   font-weight: 500;
-  color: var(--gray);
-  transition: all 0.15s;
-  box-shadow: var(--shadow);
+  color: rgb(12, 166, 120);
+  transition: background 0.08s ease-out;
+  cursor: pointer;
 }
 
 .cat-btn:hover {
-  border-color: var(--green-border);
-  color: var(--green);
+  background: rgb(232, 234, 237);
 }
 
 .cat-btn.active {
-  border-color: var(--green);
   background: var(--green);
   color: #fff;
-  box-shadow: none;
+}
+
+.cat-btn.active:hover {
+  background: var(--green-focus);
 }
 
 .cat-count {
-  font-size: 11px;
+  font-size: 0.75rem;
   opacity: 0.7;
   font-weight: 400;
 }
@@ -168,7 +170,6 @@
   font-weight: 500;
   color: var(--gray);
   transition: all 0.15s;
-  box-shadow: var(--shadow);
 }
 
 .pg-btn svg { width: 16px; height: 16px; }
@@ -178,14 +179,13 @@
   color: var(--green);
 }
 
-.pg-btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+.pg-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 .pg-btn.current {
   background: var(--green);
   border-color: var(--green);
   color: #fff;
   font-weight: 700;
-  box-shadow: none;
 }
 
 .pg-ellipsis { font-size: 14px; color: var(--gray-light); padding: 0 4px; }
