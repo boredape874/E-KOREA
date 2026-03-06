@@ -23,7 +23,6 @@
   padding: 14px 48px 14px 48px;
   font-size: 16px;
   border: 2px solid var(--gray-200);
-  border-radius: 8px;
   background: #fff;
   outline: none;
   transition: border-color 0.15s;
@@ -44,7 +43,6 @@
   justify-content: center;
   background: var(--gray-200);
   border: none;
-  border-radius: 50%;
   color: var(--gray-600);
   transition: background 0.15s;
 }
@@ -66,7 +64,6 @@
   gap: 6px;
   padding: 7px 14px;
   border: 2px solid var(--gray-200);
-  border-radius: 6px;
   background: #fff;
   font-size: 14px;
   font-weight: 500;
@@ -132,7 +129,6 @@
 .btn-outline {
   padding: 8px 20px;
   border: 2px solid var(--blue);
-  border-radius: 6px;
   background: transparent;
   color: var(--blue);
   font-size: 14px;
@@ -162,7 +158,6 @@
   align-items: center;
   justify-content: center;
   border: 2px solid var(--gray-200);
-  border-radius: 6px;
   background: #fff;
   font-size: 14px;
   font-weight: 500;
