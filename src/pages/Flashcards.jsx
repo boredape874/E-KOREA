@@ -13,7 +13,7 @@ export default function Flashcards() {
   const [flipped, setFlipped]       = useState(false)
   const [known, setKnown]           = useState(new Set())
   const [isShuffled, setIsShuffled] = useState(false)
-  const [showDesc, setShowDesc]     = useState(false) // false = 카드, true = 목록
+  const [showDesc, setShowDesc]     = useState(true) // false = 퀴즈(카드), true = 학습(바로보기)
   const containerRef = useRef()
 
   const startDeck = useCallback((cat) => {
@@ -142,15 +142,6 @@ export default function Flashcards() {
       {/* Mode toggle */}
       <div className="fc-mode-bar">
         <button
-          className={`fc-mode-btn${!showDesc ? ' active' : ''}`}
-          onClick={() => { setShowDesc(false); setFlipped(false) }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
-            <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
-          </svg>
-          카드
-        </button>
-        <button
           className={`fc-mode-btn${showDesc ? ' active' : ''}`}
           onClick={() => { setShowDesc(true); setFlipped(false) }}
         >
@@ -160,7 +151,16 @@ export default function Flashcards() {
             <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/>
             <line x1="3" y1="18" x2="3.01" y2="18"/>
           </svg>
-          설명 보기
+          바로 보기
+        </button>
+        <button
+          className={`fc-mode-btn${!showDesc ? ' active' : ''}`}
+          onClick={() => { setShowDesc(false); setFlipped(false) }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
+            <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+          </svg>
+          퀴즈
         </button>
       </div>
 
