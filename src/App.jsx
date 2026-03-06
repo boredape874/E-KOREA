@@ -1,6 +1,7 @@
 import { Routes, Route, NavLink, useLocation } from 'react-router-dom'
 import Dictionary from './pages/Dictionary'
 import Quiz from './pages/Quiz'
+import Flashcards from './pages/Flashcards'
 import './App.css'
 
 export default function App() {
@@ -30,6 +31,12 @@ export default function App() {
               </svg>
               퀴즈
             </NavLink>
+            <NavLink to="/flashcards" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+              </svg>
+              단어장
+            </NavLink>
           </nav>
         </div>
       </header>
@@ -37,6 +44,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Dictionary />} />
           <Route path="/quiz" element={<Quiz />} />
+          <Route path="/flashcards" element={<Flashcards />} />
         </Routes>
       </main>
       <footer className="footer">
