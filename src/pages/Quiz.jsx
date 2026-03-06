@@ -21,19 +21,40 @@ function normalize(str) {
   return str.trim().toLowerCase().replace(/\s+/g, ' ')
 }
 
-// Check if answer is correct with some tolerance
+// 괄호(한글/영문) 안 내용을 모두 제거한 핵심 용어 반환
+function stripParens(term) {
+  return term.replace(/[(\[（【][^)\]）】]*[)\]）】]/g, '').replace(/\s+/g, ' ').trim()
+}
+
+// Check if answer is correct — 괄호 안 내용 무시
 function checkAnswer(userAnswer, correctTerm) {
   const a = normalize(userAnswer)
   const b = normalize(correctTerm)
   if (a === b) return true
-  // Also accept if the answer is contained in the term or vice versa for long terms
-  if (b.includes('(') ) {
-    // Try matching just the Korean part or just the English part
-    const korPart = b.replace(/\(.*?\)/g, '').trim()
-    const parenPart = b.match(/\(([^)]+)\)/)?.[1]?.toLowerCase() || ''
-    if (a === korPart || (parenPart && a === parenPart)) return true
-  }
+  const stripped = normalize(stripParens(correctTerm))
+  if (stripped && a === stripped) return true
   return false
+}
+
+// 설명 텍스트에서 정답 단어(괄호 제거 버전 포함)를 모자이크 처리한 React 노드 배열 반환
+function maskTermInDesc(description, term) {
+  // 마스킹할 후보: 원본 용어 + 괄호 제거 버전
+  const candidates = [term, stripParens(term)].filter(Boolean)
+  const unique = [...new Set(candidates)].filter(s => s.length > 0)
+
+  // 가장 긴 것부터 매칭해서 겹침 방지
+  unique.sort((a, b) => b.length - a.length)
+
+  // 정규식 패턴 생성 (대소문자 무시, 특수문자 이스케이프)
+  const escaped = unique.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  const pattern = new RegExp(`(${escaped.join('|')})`, 'gi')
+
+  const parts = description.split(pattern)
+  return parts.map((part, i) =>
+    pattern.test(part)
+      ? <span key={i} className="desc-mask">{'■'.repeat(Math.max(1, part.length))}</span>
+      : part
+  )
 }
 
 const QUIZ_SIZE = 10
@@ -194,9 +215,11 @@ export default function Quiz() {
   // ── Active quiz ──
   const q = questions[current]
   const color = CATEGORY_COLORS[q.category]
-  const hint = q.term.length >= 2 ? q.term[0] + '_'.repeat(q.term.length - 1) : q.term[0]
-  const descPreview = submitted ? q.description : q.description.slice(0, 300) + (q.description.length > 300 ? '…' : '')
+  const coreTerm = stripParens(q.term)
+  const hint = coreTerm.length >= 2 ? coreTerm[0] + '_'.repeat(coreTerm.length - 1) : coreTerm[0]
   const isCorrect = submitted && checkAnswer(answer, q.term)
+  // 퀴즈 중: 설명 전체 표시, 정답 단어 마스킹
+  const descContent = submitted ? q.description : maskTermInDesc(q.description, q.term)
 
   return (
     <div className="quiz-active">
@@ -216,10 +239,7 @@ export default function Quiz() {
       {/* Description card */}
       <div className="quiz-card" style={{ borderColor: submitted ? (isCorrect ? '#16A34A' : '#DC2626') : color?.border }}>
         <div className="quiz-card-label">이 용어는 무엇일까요?</div>
-        <p className="quiz-card-desc">{descPreview}</p>
-        {!submitted && q.description.length > 300 && (
-          <button className="quiz-more-btn" onClick={() => {}}>전체 설명 보기</button>
-        )}
+        <p className="quiz-card-desc">{descContent}</p>
       </div>
 
       {/* Hint */}
