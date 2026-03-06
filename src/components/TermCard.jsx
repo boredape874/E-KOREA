@@ -9,20 +9,12 @@ function highlight(text, query) {
   )
 }
 
-export default function TermCard({ item, color, expanded, onToggle, highlight: hl }) {
+export default function TermCard({ item, expanded, onToggle, highlight: hl }) {
   return (
-    <div
-      className={`term-card${expanded ? ' expanded' : ''}`}
-      style={expanded ? { borderColor: color?.border } : {}}
-    >
+    <div className={`term-card${expanded ? ' expanded' : ''}`}>
       <button className="term-header" onClick={onToggle} aria-expanded={expanded}>
         <div className="term-left">
-          <span
-            className="term-cat"
-            style={{ background: color?.bg, color: color?.text, borderColor: color?.border }}
-          >
-            {item.category}
-          </span>
+          <span className="term-cat">{item.category}</span>
           <span className="term-name">{highlight(item.term, hl)}</span>
         </div>
         <svg

@@ -3,18 +3,6 @@ import glossaryRaw from '../data/glossary.json'
 import './Quiz.css'
 
 const CATEGORIES = ['전체', '경영', '경제', '금융', '공공', '과학', '사회']
-const CAT_COLORS = {
-  '경영': { bg: '#EFF6FF', border: '#2563EB', text: '#1D4ED8' },
-  '경제': { bg: '#F0FDF4', border: '#16A34A', text: '#15803D' },
-  '금융': { bg: '#FFF7ED', border: '#EA580C', text: '#C2410C' },
-  '공공': { bg: '#F5F3FF', border: '#7C3AED', text: '#6D28D9' },
-  '과학': { bg: '#FEFCE8', border: '#CA8A04', text: '#A16207' },
-  '사회': { bg: '#FEF2F2', border: '#DC2626', text: '#B91C1C' },
-}
-const CAT_EMOJI = {
-  '전체': '📚', '경영': '💼', '경제': '📈',
-  '금융': '💰', '공공': '🏛', '과학': '🔬', '사회': '🌐',
-}
 
 function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5) }
 function normalize(str) { return str.trim().toLowerCase().replace(/\s+/g, ' ') }
@@ -114,25 +102,11 @@ export default function Quiz() {
       <div className="quiz-cat-grid">
         {CATEGORIES.map(cat => {
           const count = cat === '전체' ? glossaryRaw.length : glossaryRaw.filter(i => i.category === cat).length
-          const c = CAT_COLORS[cat]
           return (
-            <button
-              key={cat}
-              className="quiz-cat-card"
-              style={cat !== '전체' ? { borderLeftColor: c.border, borderLeftWidth: 4 } : {}}
-              onClick={() => startQuiz(cat)}
-            >
-              <div className="quiz-cat-card-top">
-                <span className="quiz-cat-emoji">{CAT_EMOJI[cat]}</span>
-                <span
-                  className="quiz-cat-badge"
-                  style={cat !== '전체' ? { background: c.bg, color: c.text, borderColor: c.border } : {}}
-                >
-                  {cat}
-                </span>
-              </div>
+            <button key={cat} className="quiz-cat-card" onClick={() => startQuiz(cat)}>
+              <span className="quiz-cat-badge">{cat}</span>
               <div className="quiz-cat-count">{count.toLocaleString()}<span className="quiz-cat-unit">개</span></div>
-              <div className="quiz-cat-action">시작 →</div>
+              <div className="quiz-cat-action">시작하기</div>
             </button>
           )
         })}
@@ -193,7 +167,6 @@ export default function Quiz() {
 
   // ── Active quiz ──
   const q = current
-  const c = CAT_COLORS[q.category]
   const coreTerm = stripParens(q.term)
   const hint = coreTerm.length >= 2 ? coreTerm[0] + '_'.repeat(coreTerm.length - 1) : coreTerm[0]
   const isCorrect = submitted && checkAnswer(answer, q.term)
@@ -223,8 +196,8 @@ export default function Quiz() {
           <>
             <div className="quiz-stat-sep" />
             <div className="quiz-stat-item">
-              <span className="quiz-stat-num streak">🔥 {stats.streak}</span>
-              <span className="quiz-stat-lbl">연속 정답</span>
+              <span className="quiz-stat-num streak">{stats.streak}연속</span>
+              <span className="quiz-stat-lbl">정답</span>
             </div>
           </>
         )}
@@ -241,14 +214,9 @@ export default function Quiz() {
       )}
 
       {/* Question card */}
-      <div className="quiz-card" style={{
-        borderLeftColor: submitted ? (isCorrect ? '#16A34A' : '#DC2626') : (c?.border ?? '#CBD5E1'),
-        borderLeftWidth: 4,
-      }}>
+      <div className={`quiz-card${submitted ? (isCorrect ? ' card-correct' : ' card-wrong') : ''}`}>
         <div className="quiz-card-header">
-          <span className="quiz-cat-tag" style={{ background: c?.bg, color: c?.text, borderColor: c?.border }}>
-            {q.category}
-          </span>
+          <span className="quiz-cat-tag">{q.category}</span>
           <span className="quiz-card-label">이 용어는 무엇일까요?</span>
         </div>
         <p className="quiz-card-desc">{descContent}</p>
@@ -294,7 +262,7 @@ export default function Quiz() {
       <div className="quiz-actions">
         {!submitted
           ? <button className="btn-primary" onClick={handleSubmit} disabled={!answer.trim()}>제출 (Enter)</button>
-          : <button className="btn-primary" onClick={handleNext}>다음 문제 →</button>
+          : <button className="btn-primary" onClick={handleNext}>다음 문제</button>
         }
         <button className="btn-ghost" onClick={() => setShowSummary(true)}>종료 / 결과</button>
       </div>
