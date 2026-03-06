@@ -48,8 +48,13 @@ body {
 }
 
 a { color: inherit; text-decoration: none; }
-button { cursor: pointer; font-family: var(--font); }
+button { cursor: pointer; font-family: var(--font); -webkit-tap-highlight-color: transparent; }
 input { font-family: var(--font); }
+
+/* 모바일 줌 방지 (16px 이하 input) */
+@media (max-width: 640px) {
+  input, select, textarea { font-size: 16px !important; }
+}
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
