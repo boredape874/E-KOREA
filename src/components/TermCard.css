@@ -1,9 +1,8 @@
 .term-card {
   background: #fff;
   border: 2px solid var(--gray-200);
-  border-radius: 8px;
   overflow: hidden;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s;
 }
 
 .term-card:hover { border-color: var(--gray-300); }
@@ -34,7 +33,6 @@
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
-  border-radius: 4px;
   border: 1.5px solid;
   letter-spacing: 0.5px;
 }
@@ -73,6 +71,5 @@
 mark.hl {
   background: #FEF08A;
   color: var(--gray-900);
-  border-radius: 2px;
   padding: 0 1px;
 }

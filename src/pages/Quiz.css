@@ -14,7 +14,6 @@
   height: 72px;
   background: var(--blue);
   color: #fff;
-  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,7 +49,6 @@
   padding: 20px;
   background: #fff;
   border: 2px solid var(--gray-200);
-  border-radius: 10px;
   text-align: left;
   transition: all 0.15s;
 }
@@ -63,7 +61,6 @@
   font-size: 12px;
   font-weight: 700;
   padding: 3px 10px;
-  border-radius: 4px;
   border: 1.5px solid var(--gray-300);
   background: var(--gray-100);
   color: var(--gray-700);
@@ -100,14 +97,12 @@
 .quiz-progress-bar {
   height: 6px;
   background: var(--gray-200);
-  border-radius: 3px;
   overflow: hidden;
 }
 
 .quiz-progress-fill {
   height: 100%;
   background: var(--blue);
-  border-radius: 3px;
   transition: width 0.3s ease;
 }
 
@@ -121,7 +116,6 @@
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
-  border-radius: 4px;
 }
 
 .quiz-counter {
@@ -134,7 +128,6 @@
 .quiz-card {
   background: #fff;
   border: 2px solid var(--gray-200);
-  border-radius: 10px;
   padding: 24px;
   transition: border-color 0.3s;
 }
@@ -160,7 +153,6 @@
   display: inline-block;
   background: var(--gray-700);
   color: var(--gray-700);
-  border-radius: 2px;
   letter-spacing: 1px;
   user-select: none;
   vertical-align: middle;
@@ -179,7 +171,6 @@
   color: var(--gray-600);
   background: var(--gray-100);
   border: 1.5px solid var(--gray-200);
-  border-radius: 6px;
   padding: 6px 14px;
   transition: all 0.15s;
 }
@@ -191,7 +182,6 @@
   color: var(--gray-700);
   background: var(--yellow-light);
   border: 1.5px solid #CA8A04;
-  border-radius: 6px;
   padding: 6px 14px;
   letter-spacing: 2px;
 }
@@ -217,7 +207,6 @@
   font-size: 18px;
   font-weight: 600;
   border: 2px solid var(--gray-200);
-  border-radius: 8px;
   background: #fff;
   outline: none;
   transition: border-color 0.15s;
@@ -255,7 +244,6 @@
   color: var(--gray-700);
   background: #FEF2F2;
   border: 1.5px solid #DC2626;
-  border-radius: 6px;
   padding: 10px 14px;
 }
 
@@ -273,7 +261,6 @@
   background: var(--blue);
   color: #fff;
   border: none;
-  border-radius: 8px;
   font-size: 16px;
   font-weight: 700;
   transition: background 0.15s;
@@ -287,7 +274,6 @@
   background: var(--gray-100);
   color: var(--gray-600);
   border: none;
-  border-radius: 8px;
   font-size: 15px;
   font-weight: 600;
   transition: background 0.15s;
@@ -306,7 +292,6 @@
 .score-dot {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
 }
 
 .score-dot.ok     { background: #16A34A; }
@@ -329,7 +314,6 @@
   text-align: center;
   background: #fff;
   border: 2px solid var(--gray-200);
-  border-radius: 10px;
   padding: 32px 24px;
   margin-bottom: 24px;
 }
@@ -358,14 +342,12 @@
   flex: 1;
   height: 10px;
   background: var(--gray-200);
-  border-radius: 5px;
   overflow: hidden;
 }
 
 .result-bar-fill {
   height: 100%;
   background: var(--blue);
-  border-radius: 5px;
   transition: width 0.8s ease;
 }
 
@@ -386,7 +368,6 @@
 .result-item {
   background: #fff;
   border: 2px solid var(--gray-200);
-  border-radius: 8px;
   padding: 14px 16px;
 }
 
@@ -404,7 +385,6 @@
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
-  border-radius: 4px;
   flex-shrink: 0;
 }
 
