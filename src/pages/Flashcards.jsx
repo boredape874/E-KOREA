@@ -141,21 +141,18 @@ export default function Flashcards() {
       {/* Card */}
       <div className="fc-scene" onClick={() => setFlipped(f => !f)}>
         <div className={`fc-card${flipped ? ' flipped' : ''}`}>
-
-          {/* Front — term */}
-          <div className="fc-face fc-front">
-            <span className="fc-face-cat">{card.category}</span>
-            <div className="fc-face-term">{card.term}</div>
-            <div className="fc-flip-hint">클릭하여 뜻 보기</div>
-          </div>
-
-          {/* Back — description */}
-          <div className="fc-face fc-back">
-            <span className="fc-face-cat">{card.category}</span>
-            <div className="fc-face-desc">{card.description}</div>
-            <div className="fc-face-term-small">{card.term}</div>
-          </div>
-
+          <span className="fc-face-cat">{card.category}</span>
+          {flipped ? (
+            <>
+              <div className="fc-face-desc">{card.description}</div>
+              <div className="fc-face-term-small">{card.term}</div>
+            </>
+          ) : (
+            <>
+              <div className="fc-face-term">{card.term}</div>
+              <div className="fc-flip-hint">클릭하여 뜻 보기</div>
+            </>
+          )}
         </div>
       </div>
 

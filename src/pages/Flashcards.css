@@ -187,31 +187,17 @@
 .fc-shuffle-btn:hover { border-color: var(--green-border); color: var(--green); }
 .fc-shuffle-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
 
-/* ── Card (3D flip) ── */
+/* ── Card ── */
 .fc-scene {
-  perspective: 1200px;
   cursor: pointer;
   user-select: none;
 }
 
 .fc-card {
-  position: relative;
   height: 340px;
-  transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.fc-card.flipped {
-  transform: rotateY(180deg);
-}
-
-.fc-face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   background: var(--white);
   border: 1px solid var(--border);
+  border-top: 4px solid var(--green-border);
   border-radius: var(--radius);
   display: flex;
   flex-direction: column;
@@ -222,7 +208,15 @@
   transition: box-shadow 0.2s;
 }
 
-.fc-scene:hover .fc-face {
+.fc-card.flipped {
+  border-top-color: var(--green);
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 32px;
+  overflow: hidden;
+}
+
+.fc-scene:hover .fc-card {
   box-shadow: var(--shadow-md);
 }
 
@@ -236,14 +230,10 @@
   border-radius: 1rem;
   font-size: 0.875rem;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 /* Front */
-.fc-front {
-  border-top: 4px solid var(--green-border);
-  text-align: center;
-}
-
 .fc-face-term {
   font-size: 32px;
   font-weight: 900;
@@ -261,14 +251,6 @@
 }
 
 /* Back */
-.fc-back {
-  transform: rotateY(180deg);
-  border-top: 4px solid var(--green);
-  justify-content: flex-start;
-  padding-top: 32px;
-  overflow: hidden;
-}
-
 .fc-face-desc {
   font-size: 14.5px;
   line-height: 1.95;
@@ -286,6 +268,7 @@
   color: var(--green);
   align-self: flex-start;
   margin-top: 4px;
+  flex-shrink: 0;
 }
 
 /* ── Known toggle ── */
