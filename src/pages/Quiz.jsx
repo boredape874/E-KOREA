@@ -3,7 +3,7 @@ import glossaryRaw from '../data/glossary.json'
 import './Quiz.css'
 
 const CATEGORIES = ['전체', '경영', '경제', '금융', '공공', '과학', '사회']
-const CATEGORY_COLORS = {
+const CAT_COLORS = {
   '경영': { bg: '#EFF6FF', border: '#2563EB', text: '#1D4ED8' },
   '경제': { bg: '#F0FDF4', border: '#16A34A', text: '#15803D' },
   '금융': { bg: '#FFF7ED', border: '#EA580C', text: '#C2410C' },
@@ -11,249 +11,256 @@ const CATEGORY_COLORS = {
   '과학': { bg: '#FEFCE8', border: '#CA8A04', text: '#A16207' },
   '사회': { bg: '#FEF2F2', border: '#DC2626', text: '#B91C1C' },
 }
-
-function pickRandom(arr, n) {
-  const shuffled = [...arr].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, n)
+const CAT_EMOJI = {
+  '전체': '📚', '경영': '💼', '경제': '📈',
+  '금융': '💰', '공공': '🏛', '과학': '🔬', '사회': '🌐',
 }
 
-function normalize(str) {
-  return str.trim().toLowerCase().replace(/\s+/g, ' ')
-}
-
-// 괄호(한글/영문) 안 내용을 모두 제거한 핵심 용어 반환
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5) }
+function normalize(str) { return str.trim().toLowerCase().replace(/\s+/g, ' ') }
 function stripParens(term) {
   return term.replace(/[(\[（【][^)\]）】]*[)\]）】]/g, '').replace(/\s+/g, ' ').trim()
 }
-
-// Check if answer is correct — 괄호 안 내용 무시
 function checkAnswer(userAnswer, correctTerm) {
   const a = normalize(userAnswer)
-  const b = normalize(correctTerm)
-  if (a === b) return true
+  if (a === normalize(correctTerm)) return true
   const stripped = normalize(stripParens(correctTerm))
-  if (stripped && a === stripped) return true
-  return false
+  return stripped.length > 0 && a === stripped
 }
-
-// 설명 텍스트에서 정답 단어(괄호 제거 버전 포함)를 모자이크 처리한 React 노드 배열 반환
 function maskTermInDesc(description, term) {
-  // 마스킹할 후보: 원본 용어 + 괄호 제거 버전
-  const candidates = [term, stripParens(term)].filter(Boolean)
-  const unique = [...new Set(candidates)].filter(s => s.length > 0)
-
-  // 가장 긴 것부터 매칭해서 겹침 방지
-  unique.sort((a, b) => b.length - a.length)
-
-  // 정규식 패턴 생성 (대소문자 무시, 특수문자 이스케이프)
-  const escaped = unique.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-  const pattern = new RegExp(`(${escaped.join('|')})`, 'gi')
-
-  const parts = description.split(pattern)
-  return parts.map((part, i) =>
+  const candidates = [...new Set([term, stripParens(term)])].filter(s => s.length > 0)
+  candidates.sort((a, b) => b.length - a.length)
+  const pattern = new RegExp(
+    `(${candidates.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi'
+  )
+  return description.split(pattern).map((part, i) =>
     pattern.test(part)
       ? <span key={i} className="desc-mask">{'■'.repeat(Math.max(1, part.length))}</span>
       : part
   )
 }
 
-const QUIZ_SIZE = 10
-
 export default function Quiz() {
-  const [category, setCategory] = useState('전체')
-  const [questions, setQuestions] = useState(null)
-  const [current, setCurrent] = useState(0)
-  const [answer, setAnswer] = useState('')
+  const [category, setCategory]   = useState(null)
+  const [current, setCurrent]     = useState(null)
+  const [answer, setAnswer]       = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const [results, setResults] = useState([])
-  const [finished, setFinished] = useState(false)
-  const [showHint, setShowHint] = useState(false)
+  const [showHint, setShowHint]   = useState(false)
+  const [stats, setStats]         = useState({ total: 0, correct: 0, streak: 0, best: 0 })
+  const [history, setHistory]     = useState([])
+  const [showSummary, setShowSummary] = useState(false)
+  const queueRef = useRef([])
   const inputRef = useRef()
 
-  const pool = useCallback((cat) => {
-    if (cat === '전체') return glossaryRaw
-    return glossaryRaw.filter(i => i.category === cat)
-  }, [])
+  const getPool = useCallback((cat) =>
+    cat === '전체' ? glossaryRaw : glossaryRaw.filter(i => i.category === cat)
+  , [])
 
-  const startQuiz = useCallback((cat) => {
-    const items = pickRandom(pool(cat), QUIZ_SIZE)
-    setQuestions(items)
-    setCurrent(0)
+  const nextQuestion = useCallback((cat) => {
+    if (queueRef.current.length === 0) queueRef.current = shuffle(getPool(cat))
+    setCurrent(queueRef.current.shift())
     setAnswer('')
     setSubmitted(false)
-    setResults([])
-    setFinished(false)
     setShowHint(false)
-  }, [pool])
+  }, [getPool])
 
-  const handleCategoryStart = (cat) => {
+  const startQuiz = useCallback((cat) => {
+    queueRef.current = shuffle(getPool(cat))
     setCategory(cat)
-    startQuiz(cat)
-  }
+    setCurrent(queueRef.current.shift())
+    setAnswer('')
+    setSubmitted(false)
+    setShowHint(false)
+    setStats({ total: 0, correct: 0, streak: 0, best: 0 })
+    setHistory([])
+    setShowSummary(false)
+  }, [getPool])
 
   const handleSubmit = useCallback(() => {
-    if (!answer.trim() || submitted) return
-    const correct = checkAnswer(answer, questions[current].term)
+    if (!answer.trim() || submitted || !current) return
+    const correct = checkAnswer(answer, current.term)
     setSubmitted(true)
-    setResults(prev => [...prev, { item: questions[current], userAnswer: answer, correct }])
-  }, [answer, submitted, questions, current])
+    setStats(prev => {
+      const streak = correct ? prev.streak + 1 : 0
+      return { total: prev.total + 1, correct: prev.correct + (correct ? 1 : 0), streak, best: Math.max(prev.best, streak) }
+    })
+    setHistory(prev => [...prev.slice(-29), { term: current.term, correct }])
+  }, [answer, submitted, current])
 
   const handleNext = useCallback(() => {
-    const nextIdx = current + 1
-    if (nextIdx >= questions.length) {
-      setFinished(true)
-    } else {
-      setCurrent(nextIdx)
-      setAnswer('')
-      setSubmitted(false)
-      setShowHint(false)
-      setTimeout(() => inputRef.current?.focus(), 50)
-    }
-  }, [current, questions])
+    nextQuestion(category)
+    setTimeout(() => inputRef.current?.focus(), 50)
+  }, [nextQuestion, category])
 
   const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter') {
-      if (!submitted) handleSubmit()
-      else handleNext()
-    }
+    if (e.key === 'Enter') submitted ? handleNext() : handleSubmit()
   }, [submitted, handleSubmit, handleNext])
 
   useEffect(() => {
-    if (questions && !submitted && !finished) {
-      setTimeout(() => inputRef.current?.focus(), 50)
-    }
-  }, [current, questions, submitted, finished])
+    if (current && !submitted) setTimeout(() => inputRef.current?.focus(), 50)
+  }, [current, submitted])
 
-  // ── Landing / category select ──
-  if (!questions) {
-    return (
-      <div className="quiz-landing">
-        <div className="quiz-hero">
-          <div className="quiz-hero-icon">?</div>
-          <h1 className="quiz-hero-title">시사경제 용어 퀴즈</h1>
-          <p className="quiz-hero-desc">
-            설명을 읽고 해당하는 용어를 직접 입력하세요.<br />
-            총 {QUIZ_SIZE}문제가 출제됩니다.
-          </p>
-        </div>
-
-        <div className="quiz-cat-grid">
-          {CATEGORIES.map(cat => {
-            const count = cat === '전체' ? glossaryRaw.length : glossaryRaw.filter(i => i.category === cat).length
-            const color = CATEGORY_COLORS[cat]
-            return (
-              <button
-                key={cat}
-                className="quiz-cat-card"
-                style={cat !== '전체' ? { borderColor: color.border } : {}}
-                onClick={() => handleCategoryStart(cat)}
-              >
+  // ── Landing ──
+  if (!category) return (
+    <div className="quiz-landing">
+      <div className="quiz-hero">
+        <div className="quiz-hero-badge">QUIZ</div>
+        <h1 className="quiz-hero-title">시사경제 용어 퀴즈</h1>
+        <p className="quiz-hero-desc">
+          설명을 읽고 용어를 맞춰보세요.<br />
+          문제 수 제한 없이 원하는 만큼 계속 풀 수 있습니다.
+        </p>
+      </div>
+      <div className="quiz-cat-grid">
+        {CATEGORIES.map(cat => {
+          const count = cat === '전체' ? glossaryRaw.length : glossaryRaw.filter(i => i.category === cat).length
+          const c = CAT_COLORS[cat]
+          return (
+            <button
+              key={cat}
+              className="quiz-cat-card"
+              style={cat !== '전체' ? { borderLeftColor: c.border, borderLeftWidth: 4 } : {}}
+              onClick={() => startQuiz(cat)}
+            >
+              <div className="quiz-cat-card-top">
+                <span className="quiz-cat-emoji">{CAT_EMOJI[cat]}</span>
                 <span
                   className="quiz-cat-badge"
-                  style={cat !== '전체' ? { background: color.bg, color: color.text, borderColor: color.border } : {}}
+                  style={cat !== '전체' ? { background: c.bg, color: c.text, borderColor: c.border } : {}}
                 >
                   {cat}
                 </span>
-                <span className="quiz-cat-count">{count.toLocaleString()}개</span>
-                <span className="quiz-cat-label">문제 시작 →</span>
-              </button>
-            )
-          })}
-        </div>
+              </div>
+              <div className="quiz-cat-count">{count.toLocaleString()}<span className="quiz-cat-unit">개</span></div>
+              <div className="quiz-cat-action">시작 →</div>
+            </button>
+          )
+        })}
       </div>
-    )
-  }
+    </div>
+  )
 
-  // ── Finished screen ──
-  if (finished) {
-    const score = results.filter(r => r.correct).length
-    const pct = Math.round((score / QUIZ_SIZE) * 100)
-    const grade = pct >= 90 ? '🏆 완벽!' : pct >= 70 ? '👏 우수' : pct >= 50 ? '💪 보통' : '📚 분발'
-
+  // ── Summary ──
+  if (showSummary) {
+    const pct = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0
     return (
-      <div className="quiz-result">
-        <div className="result-header">
-          <div className="result-grade">{grade}</div>
-          <h2 className="result-title">{score} / {QUIZ_SIZE} 정답</h2>
-          <div className="result-bar-wrap">
-            <div className="result-bar">
-              <div className="result-bar-fill" style={{ width: `${pct}%` }} />
+      <div className="quiz-summary">
+        <div className="summary-card">
+          <div className="summary-label">세션 결과</div>
+          <div className="summary-stat-grid">
+            <div className="summary-stat">
+              <div className="summary-stat-val">{stats.total}</div>
+              <div className="summary-stat-key">총 문제</div>
             </div>
-            <span className="result-pct">{pct}%</span>
+            <div className="summary-stat ok">
+              <div className="summary-stat-val">{stats.correct}</div>
+              <div className="summary-stat-key">정답</div>
+            </div>
+            <div className="summary-stat">
+              <div className="summary-stat-val">{pct}%</div>
+              <div className="summary-stat-key">정답률</div>
+            </div>
+            <div className="summary-stat">
+              <div className="summary-stat-val">{stats.best}</div>
+              <div className="summary-stat-key">최고 연속</div>
+            </div>
+          </div>
+          <div className="summary-bar-wrap">
+            <div className="summary-bar"><div className="summary-bar-fill" style={{ width: `${pct}%` }} /></div>
+            <span className="summary-pct">{pct}%</span>
           </div>
         </div>
 
-        <div className="result-list">
-          {results.map((r, i) => (
-            <div key={i} className={`result-item ${r.correct ? 'ok' : 'fail'}`}>
-              <div className="result-item-header">
-                <span className={`result-badge ${r.correct ? 'ok' : 'fail'}`}>
-                  {r.correct ? '✓ 정답' : '✗ 오답'}
-                </span>
-                <span className="result-term">{r.item.term}</span>
+        {history.length > 0 && (
+          <div className="summary-history">
+            <div className="summary-history-title">최근 기록</div>
+            {[...history].reverse().slice(0, 15).map((h, i) => (
+              <div key={i} className={`summary-row ${h.correct ? 'ok' : 'fail'}`}>
+                <span className={`summary-row-icon ${h.correct ? 'ok' : 'fail'}`}>{h.correct ? '✓' : '✗'}</span>
+                <span className="summary-row-term">{h.term}</span>
               </div>
-              {!r.correct && (
-                <div className="result-user-answer">내 답: <em>{r.userAnswer || '(미입력)'}</em></div>
-              )}
-              <p className="result-desc-preview">{r.item.description.slice(0, 120)}…</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
-        <div className="result-actions">
-          <button className="btn-primary" onClick={() => startQuiz(category)}>
-            같은 카테고리 재시작
-          </button>
-          <button className="btn-outline" onClick={() => setQuestions(null)}>
-            카테고리 변경
-          </button>
+        <div className="quiz-actions">
+          <button className="btn-primary" onClick={() => startQuiz(category)}>다시 시작</button>
+          <button className="btn-ghost" onClick={() => setCategory(null)}>카테고리 변경</button>
         </div>
       </div>
     )
   }
 
   // ── Active quiz ──
-  const q = questions[current]
-  const color = CATEGORY_COLORS[q.category]
+  const q = current
+  const c = CAT_COLORS[q.category]
   const coreTerm = stripParens(q.term)
   const hint = coreTerm.length >= 2 ? coreTerm[0] + '_'.repeat(coreTerm.length - 1) : coreTerm[0]
   const isCorrect = submitted && checkAnswer(answer, q.term)
-  // 퀴즈 중: 설명 전체 표시, 정답 단어 마스킹
   const descContent = submitted ? q.description : maskTermInDesc(q.description, q.term)
+  const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : null
 
   return (
     <div className="quiz-active">
-      {/* Progress */}
-      <div className="quiz-progress">
-        <div className="quiz-progress-bar">
-          <div className="quiz-progress-fill" style={{ width: `${(current / QUIZ_SIZE) * 100}%` }} />
+
+      {/* Stats bar */}
+      <div className="quiz-stats-bar">
+        <div className="quiz-stat-item">
+          <span className="quiz-stat-num">{stats.total + 1}</span>
+          <span className="quiz-stat-lbl">번째</span>
         </div>
-        <div className="quiz-progress-meta">
-          <span style={{ color: color?.text, background: color?.bg, border: `1.5px solid ${color?.border}` }} className="quiz-cat-tag">
-            {q.category}
-          </span>
-          <span className="quiz-counter">{current + 1} / {QUIZ_SIZE}</span>
+        <div className="quiz-stat-sep" />
+        <div className="quiz-stat-item">
+          <span className="quiz-stat-num ok">{stats.correct}</span>
+          <span className="quiz-stat-lbl">정답</span>
         </div>
+        <div className="quiz-stat-sep" />
+        <div className="quiz-stat-item">
+          <span className="quiz-stat-num">{accuracy !== null ? `${accuracy}%` : '—'}</span>
+          <span className="quiz-stat-lbl">정확도</span>
+        </div>
+        {stats.streak >= 2 && (
+          <>
+            <div className="quiz-stat-sep" />
+            <div className="quiz-stat-item">
+              <span className="quiz-stat-num streak">🔥 {stats.streak}</span>
+              <span className="quiz-stat-lbl">연속 정답</span>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Description card */}
-      <div className="quiz-card" style={{ borderColor: submitted ? (isCorrect ? '#16A34A' : '#DC2626') : color?.border }}>
-        <div className="quiz-card-label">이 용어는 무엇일까요?</div>
+      {/* History dots */}
+      {history.length > 0 && (
+        <div className="quiz-score-track">
+          {history.slice(-20).map((h, i) => (
+            <span key={i} className={`score-dot ${h.correct ? 'ok' : 'fail'}`} title={h.term} />
+          ))}
+          <span className="score-dot current" />
+        </div>
+      )}
+
+      {/* Question card */}
+      <div className="quiz-card" style={{
+        borderLeftColor: submitted ? (isCorrect ? '#16A34A' : '#DC2626') : (c?.border ?? '#CBD5E1'),
+        borderLeftWidth: 4,
+      }}>
+        <div className="quiz-card-header">
+          <span className="quiz-cat-tag" style={{ background: c?.bg, color: c?.text, borderColor: c?.border }}>
+            {q.category}
+          </span>
+          <span className="quiz-card-label">이 용어는 무엇일까요?</span>
+        </div>
         <p className="quiz-card-desc">{descContent}</p>
       </div>
 
       {/* Hint */}
       {!submitted && (
         <div className="quiz-hint-row">
-          {!showHint ? (
-            <button className="hint-btn" onClick={() => setShowHint(true)}>
-              힌트 보기 (첫 글자)
-            </button>
-          ) : (
-            <div className="hint-text">
-              힌트: <strong>{hint}</strong> ({q.term.length}글자)
-            </div>
-          )}
+          {!showHint
+            ? <button className="hint-btn" onClick={() => setShowHint(true)}>힌트 보기 (첫 글자)</button>
+            : <div className="hint-text">힌트: <strong>{hint}</strong> <span className="hint-len">({q.term.length}글자)</span></div>
+          }
         </div>
       )}
 
@@ -264,7 +271,7 @@ export default function Quiz() {
             ref={inputRef}
             type="text"
             className="quiz-input"
-            placeholder="용어를 입력하세요..."
+            placeholder="용어를 입력하고 Enter…"
             value={answer}
             onChange={e => !submitted && setAnswer(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -276,7 +283,6 @@ export default function Quiz() {
             </span>
           )}
         </div>
-
         {submitted && !isCorrect && (
           <div className="quiz-answer-reveal">
             정답: <strong>{q.term}</strong>
@@ -286,34 +292,13 @@ export default function Quiz() {
 
       {/* Actions */}
       <div className="quiz-actions">
-        {!submitted ? (
-          <button
-            className="btn-primary"
-            onClick={handleSubmit}
-            disabled={!answer.trim()}
-          >
-            제출 (Enter)
-          </button>
-        ) : (
-          <button className="btn-primary" onClick={handleNext}>
-            {current + 1 < QUIZ_SIZE ? '다음 문제 →' : '결과 보기 →'}
-          </button>
-        )}
-        <button className="btn-ghost" onClick={() => setQuestions(null)}>
-          종료
-        </button>
+        {!submitted
+          ? <button className="btn-primary" onClick={handleSubmit} disabled={!answer.trim()}>제출 (Enter)</button>
+          : <button className="btn-primary" onClick={handleNext}>다음 문제 →</button>
+        }
+        <button className="btn-ghost" onClick={() => setShowSummary(true)}>종료 / 결과</button>
       </div>
 
-      {/* Score track */}
-      <div className="quiz-score-track">
-        {results.map((r, i) => (
-          <span key={i} className={`score-dot ${r.correct ? 'ok' : 'fail'}`} title={r.item.term} />
-        ))}
-        {current >= results.length && <span className="score-dot current" />}
-        {Array.from({ length: QUIZ_SIZE - results.length - 1 }).map((_, i) => (
-          <span key={`e${i}`} className="score-dot empty" />
-        ))}
-      </div>
     </div>
   )
 }
