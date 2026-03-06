@@ -7,22 +7,23 @@ const CATEGORIES = ['전체', '경영', '경제', '금융', '공공', '과학', 
 function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5) }
 
 export default function Flashcards() {
-  const [category, setCategory] = useState(null)
-  const [deck, setDeck]         = useState([])
-  const [index, setIndex]       = useState(0)
-  const [flipped, setFlipped]   = useState(false)
-  const [known, setKnown]       = useState(new Set())
+  const [category, setCategory]     = useState(null)
+  const [deck, setDeck]             = useState([])
+  const [index, setIndex]           = useState(0)
+  const [flipped, setFlipped]       = useState(false)
+  const [known, setKnown]           = useState(new Set())
   const [isShuffled, setIsShuffled] = useState(false)
+  const [showDesc, setShowDesc]     = useState(false) // false = 카드, true = 목록
   const containerRef = useRef()
 
-  const startDeck = useCallback((cat, doShuffle = false) => {
+  const startDeck = useCallback((cat) => {
     const pool = cat === '전체' ? glossaryRaw : glossaryRaw.filter(i => i.category === cat)
-    setDeck(doShuffle ? shuffle(pool) : [...pool])
+    setDeck([...pool])
     setCategory(cat)
     setIndex(0)
     setFlipped(false)
     setKnown(new Set())
-    setIsShuffled(doShuffle)
+    setIsShuffled(false)
     setTimeout(() => containerRef.current?.focus(), 50)
   }, [])
 
@@ -55,19 +56,19 @@ export default function Flashcards() {
     setFlipped(false)
   }, [category, isShuffled])
 
-  // Keyboard
+  // Keyboard (카드 모드일 때만 flip/nav)
   useEffect(() => {
     if (!category) return
     const handler = (e) => {
       if (e.target.tagName === 'INPUT') return
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); go(1) }
       else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(-1) }
-      else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setFlipped(f => !f) }
+      else if (!showDesc && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); setFlipped(f => !f) }
       else if (e.key === 'k' || e.key === 'K') toggleKnown()
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [category, go, toggleKnown])
+  }, [category, go, toggleKnown, showDesc])
 
   // ── Landing ──
   if (!category) return (
@@ -138,23 +139,61 @@ export default function Flashcards() {
         </div>
       </div>
 
-      {/* Card */}
-      <div className="fc-scene" onClick={() => setFlipped(f => !f)}>
-        <div className={`fc-card${flipped ? ' flipped' : ''}`}>
-          <span className="fc-face-cat">{card.category}</span>
-          {flipped ? (
-            <>
-              <div className="fc-face-desc">{card.description}</div>
-              <div className="fc-face-term-small">{card.term}</div>
-            </>
-          ) : (
-            <>
-              <div className="fc-face-term">{card.term}</div>
-              <div className="fc-flip-hint">클릭하여 뜻 보기</div>
-            </>
-          )}
-        </div>
+      {/* Mode toggle */}
+      <div className="fc-mode-bar">
+        <button
+          className={`fc-mode-btn${!showDesc ? ' active' : ''}`}
+          onClick={() => { setShowDesc(false); setFlipped(false) }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
+            <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+          </svg>
+          카드
+        </button>
+        <button
+          className={`fc-mode-btn${showDesc ? ' active' : ''}`}
+          onClick={() => { setShowDesc(true); setFlipped(false) }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
+            <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/>
+            <line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+          설명 보기
+        </button>
       </div>
+
+      {/* Card — 카드 모드 */}
+      {!showDesc && (
+        <div className="fc-scene" onClick={() => setFlipped(f => !f)}>
+          <div className={`fc-card${flipped ? ' flipped' : ''}`}>
+            <span className="fc-face-cat">{card.category}</span>
+            {flipped ? (
+              <>
+                <div className="fc-face-desc">{card.description}</div>
+                <div className="fc-face-term-small">{card.term}</div>
+              </>
+            ) : (
+              <>
+                <div className="fc-face-term">{card.term}</div>
+                <div className="fc-flip-hint">클릭하여 뜻 보기</div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Card — 설명 보기 모드 */}
+      {showDesc && (
+        <div className="fc-card-open">
+          <div className="fc-open-header">
+            <span className="fc-face-cat">{card.category}</span>
+            <span className="fc-open-term">{card.term}</span>
+          </div>
+          <p className="fc-open-desc">{card.description}</p>
+        </div>
+      )}
 
       {/* Known toggle */}
       <div className="fc-known-row">
@@ -162,18 +201,14 @@ export default function Flashcards() {
           className={`fc-known-btn${isKnown ? ' known' : ''}`}
           onClick={toggleKnown}
         >
-          {isKnown ? '알고 있어요' : '알고 있어요'}
-          <span className="fc-known-check">{isKnown ? '✓' : ''}</span>
+          알고 있어요
+          {isKnown && <span className="fc-known-check">✓</span>}
         </button>
       </div>
 
       {/* Navigation */}
       <div className="fc-nav">
-        <button
-          className="fc-nav-btn"
-          onClick={() => go(-1)}
-          disabled={index === 0}
-        >
+        <button className="fc-nav-btn" onClick={() => go(-1)} disabled={index === 0}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6"/>
           </svg>
@@ -193,11 +228,7 @@ export default function Flashcards() {
           })}
         </div>
 
-        <button
-          className="fc-nav-btn"
-          onClick={() => go(1)}
-          disabled={index === deck.length - 1}
-        >
+        <button className="fc-nav-btn" onClick={() => go(1)} disabled={index === deck.length - 1}>
           다음
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6"/>
@@ -205,12 +236,13 @@ export default function Flashcards() {
         </button>
       </div>
 
-      {/* Keyboard hint */}
-      <div className="fc-keyboard-hint">
-        <span>← → 넘기기</span>
-        <span>Space 뒤집기</span>
-        <span>K 알아요 표시</span>
-      </div>
+      {!showDesc && (
+        <div className="fc-keyboard-hint">
+          <span>← → 넘기기</span>
+          <span>Space 뒤집기</span>
+          <span>K 알아요 표시</span>
+        </div>
+      )}
 
     </div>
   )

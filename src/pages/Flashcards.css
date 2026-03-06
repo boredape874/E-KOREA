@@ -187,6 +187,40 @@
 .fc-shuffle-btn:hover { border-color: var(--green-border); color: var(--green); }
 .fc-shuffle-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
 
+/* ── Mode toggle ── */
+.fc-mode-bar {
+  display: flex;
+  background: var(--gray-100);
+  border-radius: var(--radius);
+  padding: 3px;
+  gap: 2px;
+  width: fit-content;
+  align-self: center;
+}
+
+.fc-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border: none;
+  border-radius: calc(var(--radius) - 1px);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-mid);
+  background: transparent;
+  transition: all 0.12s;
+}
+
+.fc-mode-btn:hover { color: var(--black); }
+
+.fc-mode-btn.active {
+  background: var(--white);
+  color: var(--black);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
 /* ── Card ── */
 .fc-scene {
   cursor: pointer;
@@ -269,6 +303,41 @@
   align-self: flex-start;
   margin-top: 4px;
   flex-shrink: 0;
+}
+
+/* ── Open card (설명 보기 모드) ── */
+.fc-card-open {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 160px;
+}
+
+.fc-open-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fc-open-term {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--black);
+  letter-spacing: -0.3px;
+}
+
+.fc-open-desc {
+  font-size: 14.5px;
+  line-height: 1.95;
+  color: var(--gray);
+  white-space: pre-wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
 }
 
 /* ── Known toggle ── */
