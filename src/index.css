@@ -5,36 +5,54 @@
 }
 
 :root {
-  --blue:    #2563EB;
-  --blue-dark: #1D4ED8;
-  --blue-light: #EFF6FF;
-  --green:   #16A34A;
-  --green-light: #F0FDF4;
-  --red:     #DC2626;
-  --red-light: #FEF2F2;
-  --yellow:  #CA8A04;
-  --yellow-light: #FEFCE8;
-  --purple:  #7C3AED;
-  --purple-light: #F5F3FF;
-  --orange:  #EA580C;
-  --orange-light: #FFF7ED;
-  --gray-50:  #F8FAFC;
-  --gray-100: #F1F5F9;
-  --gray-200: #E2E8F0;
-  --gray-300: #CBD5E1;
-  --gray-400: #94A3B8;
-  --gray-600: #475569;
-  --gray-700: #334155;
-  --gray-900: #0F172A;
-  --font: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  /* Primary — Velog teal */
+  --green:        rgb(18, 184, 134);
+  --green-focus:  rgb(32, 201, 151);
+  --green-light:  rgba(18, 184, 134, 0.08);
+  --green-border: rgba(18, 184, 134, 0.4);
+
+  /* Status */
+  --red:          rgb(255, 107, 107);
+  --red-light:    rgba(255, 107, 107, 0.08);
+  --red-border:   rgba(255, 107, 107, 0.4);
+  --yellow:       #f59f00;
+  --yellow-light: #fff9db;
+
+  /* Category colors (kept for badges) */
+  --cat-경영-bg:   #EFF6FF; --cat-경영-border: #2563EB; --cat-경영-text: #1D4ED8;
+  --cat-경제-bg:   #F0FDF4; --cat-경제-border: #16A34A; --cat-경제-text: #15803D;
+  --cat-금융-bg:   #FFF7ED; --cat-금융-border: #EA580C; --cat-금융-text: #C2410C;
+  --cat-공공-bg:   #F5F3FF; --cat-공공-border: #7C3AED; --cat-공공-text: #6D28D9;
+  --cat-과학-bg:   #FEFCE8; --cat-과학-border: #CA8A04; --cat-과학-text: #A16207;
+  --cat-사회-bg:   #FEF2F2; --cat-사회-border: #DC2626; --cat-사회-text: #B91C1C;
+
+  /* Neutrals */
+  --bg:        rgba(33, 37, 41, 0.028);
+  --white:     #ffffff;
+  --border:    #e6e6e6;
+  --shadow:    0 0 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 2px 12px rgba(0,0,0,0.10);
+
+  --black:     #262626;
+  --gray-dark: rgb(33, 37, 41);
+  --gray:      rgb(73, 80, 87);
+  --gray-mid:  #999;
+  --gray-light: #c7c7c7;
+  --gray-100:  #f1f3f5;
+  --gray-50:   #f8f9fa;
+
+  --radius:  4px;
+  --font:    'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
 }
 
 body {
   font-family: var(--font);
-  background: var(--gray-50);
-  color: var(--gray-900);
+  background: var(--bg);
+  color: var(--black);
   line-height: 1.6;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -43,6 +61,6 @@ input { font-family: var(--font); }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--gray-100); }
-::-webkit-scrollbar-thumb { background: var(--gray-300); }
-::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gray-mid); }

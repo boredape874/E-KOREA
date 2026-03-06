@@ -1,19 +1,21 @@
 .term-card {
-  background: #fff;
-  border: 2px solid var(--gray-200);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   overflow: hidden;
-  transition: border-color 0.15s;
+  transition: box-shadow 0.2s;
 }
 
-.term-card:hover { border-color: var(--gray-300); }
-.term-card.expanded { }
+.term-card:hover {
+  box-shadow: var(--shadow-md);
+}
 
 .term-header {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 14px 18px;
   background: transparent;
   border: none;
   text-align: left;
@@ -33,14 +35,15 @@
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
+  border-radius: 20px;
   border: 1.5px solid;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .term-name {
   font-size: 15px;
   font-weight: 600;
-  color: var(--gray-900);
+  color: var(--black);
   word-break: break-all;
 }
 
@@ -48,28 +51,28 @@
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  color: var(--gray-400);
+  color: var(--gray-light);
   transition: transform 0.2s;
 }
 
 .term-chevron.open { transform: rotate(180deg); }
 
 .term-body {
-  padding: 0 16px 16px;
-  border-top: 1.5px solid var(--gray-100);
-  margin-top: 0;
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--border);
 }
 
 .term-desc {
   font-size: 14px;
-  line-height: 1.8;
-  color: var(--gray-700);
+  line-height: 1.9;
+  color: var(--gray);
   white-space: pre-wrap;
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 mark.hl {
-  background: #FEF08A;
-  color: var(--gray-900);
-  padding: 0 1px;
+  background: #fff3bf;
+  color: var(--black);
+  border-radius: 2px;
+  padding: 0 2px;
 }
