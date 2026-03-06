@@ -189,3 +189,33 @@
 }
 
 .pg-ellipsis { font-size: 14px; color: var(--gray-light); padding: 0 4px; }
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  /* 검색창 */
+  .search-input { font-size: 16px; padding: 12px 44px 12px 42px; }
+
+  /* 카테고리 — 가로 스크롤 */
+  .cat-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    gap: 6px;
+  }
+  .cat-bar::-webkit-scrollbar { display: none; }
+  .cat-btn { flex-shrink: 0; height: 1.875rem; padding: 0 0.875rem; font-size: 0.875rem; }
+
+  /* 결과 정보 */
+  .result-info { font-size: 13px; }
+
+  /* 페이지네이션 */
+  .pg-btn { min-width: 32px; height: 32px; font-size: 13px; }
+
+  /* 카드 */
+  .term-header { padding: 12px 14px; }
+  .term-name { font-size: 14px; }
+  .term-body { padding: 0 14px 14px; }
+  .term-desc { font-size: 13px; }
+}

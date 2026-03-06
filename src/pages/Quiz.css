@@ -514,12 +514,40 @@
    RESPONSIVE
 ═══════════════════════════════ */
 @media (max-width: 640px) {
-  .quiz-cat-grid { grid-template-columns: 1fr 1fr; }
-  .quiz-hero-title { font-size: 24px; }
-  .quiz-card-desc { font-size: 15px; }
-  .quiz-input { font-size: 16px; }
-  .quiz-stat-item { padding: 12px 14px; }
+  /* Landing */
+  .quiz-hero { padding: 28px 0 28px; }
+  .quiz-hero-title { font-size: 22px; }
+  .quiz-hero-desc { font-size: 14px; }
+  .quiz-cat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .quiz-cat-card { padding: 18px 14px; gap: 10px; }
+  .quiz-cat-count { font-size: 22px; }
+
+  /* Stats bar — 가로 스크롤 */
+  .quiz-stats-bar { overflow-x: auto; scrollbar-width: none; }
+  .quiz-stats-bar::-webkit-scrollbar { display: none; }
+  .quiz-stat-item { padding: 12px 16px; white-space: nowrap; }
   .quiz-stat-num { font-size: 18px; }
+
+  /* 점수 도트 */
+  .quiz-score-track { padding: 8px 12px; gap: 4px; }
+  .score-dot { width: 8px; height: 8px; }
+
+  /* 질문 카드 */
+  .quiz-card { padding: 18px 16px; }
+  .quiz-card-desc { font-size: 15px; line-height: 1.9; }
+
+  /* 입력 */
+  .quiz-input { font-size: 16px; padding: 14px 46px 14px 14px; }
+  .quiz-answer-reveal { font-size: 13px; padding: 9px 14px; }
+
+  /* 버튼 */
+  .btn-primary { padding: 14px; font-size: 15px; }
+  .btn-ghost { padding: 14px 14px; font-size: 13px; }
+
+  /* Summary */
+  .summary-card { padding: 22px 18px; }
   .summary-stat-grid { grid-template-columns: repeat(2, 1fr); }
   .summary-stat:nth-child(2) { border-right: none; }
+  .summary-stat-val { font-size: 22px; }
+  .summary-row { padding: 10px 14px; font-size: 13px; }
 }

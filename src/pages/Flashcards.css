@@ -187,31 +187,51 @@
 .fc-shuffle-btn:hover { border-color: var(--green-border); color: var(--green); }
 .fc-shuffle-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
 
-/* ── Card (3D flip) ── */
+/* ── Mode toggle ── */
+.fc-mode-bar {
+  display: flex;
+  background: var(--gray-100);
+  border-radius: var(--radius);
+  padding: 3px;
+  gap: 2px;
+  width: fit-content;
+  align-self: center;
+}
+
+.fc-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border: none;
+  border-radius: calc(var(--radius) - 1px);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-mid);
+  background: transparent;
+  transition: all 0.12s;
+}
+
+.fc-mode-btn:hover { color: var(--black); }
+
+.fc-mode-btn.active {
+  background: var(--white);
+  color: var(--black);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* ── Card ── */
 .fc-scene {
-  perspective: 1200px;
   cursor: pointer;
   user-select: none;
 }
 
 .fc-card {
-  position: relative;
   height: 340px;
-  transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.fc-card.flipped {
-  transform: rotateY(180deg);
-}
-
-.fc-face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   background: var(--white);
   border: 1px solid var(--border);
+  border-top: 4px solid var(--green-border);
   border-radius: var(--radius);
   display: flex;
   flex-direction: column;
@@ -222,7 +242,15 @@
   transition: box-shadow 0.2s;
 }
 
-.fc-scene:hover .fc-face {
+.fc-card.flipped {
+  border-top-color: var(--green);
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 32px;
+  overflow: hidden;
+}
+
+.fc-scene:hover .fc-card {
   box-shadow: var(--shadow-md);
 }
 
@@ -236,14 +264,10 @@
   border-radius: 1rem;
   font-size: 0.875rem;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 /* Front */
-.fc-front {
-  border-top: 4px solid var(--green-border);
-  text-align: center;
-}
-
 .fc-face-term {
   font-size: 32px;
   font-weight: 900;
@@ -261,14 +285,6 @@
 }
 
 /* Back */
-.fc-back {
-  transform: rotateY(180deg);
-  border-top: 4px solid var(--green);
-  justify-content: flex-start;
-  padding-top: 32px;
-  overflow: hidden;
-}
-
 .fc-face-desc {
   font-size: 14.5px;
   line-height: 1.95;
@@ -286,6 +302,42 @@
   color: var(--green);
   align-self: flex-start;
   margin-top: 4px;
+  flex-shrink: 0;
+}
+
+/* ── Open card (설명 보기 모드) ── */
+.fc-card-open {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 160px;
+}
+
+.fc-open-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fc-open-term {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--black);
+  letter-spacing: -0.3px;
+}
+
+.fc-open-desc {
+  font-size: 14.5px;
+  line-height: 1.95;
+  color: var(--gray);
+  white-space: pre-wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
 }
 
 /* ── Known toggle ── */
@@ -395,14 +447,49 @@
   gap: 4px;
 }
 
-/* ── Responsive ── */
+/* ── Mobile ── */
 @media (max-width: 640px) {
-  .fc-cat-grid { grid-template-columns: 1fr 1fr; }
-  .fc-hero-title { font-size: 24px; }
-  .fc-card { height: 280px; }
-  .fc-face-term { font-size: 24px; }
-  .fc-face { padding: 24px 24px; gap: 14px; }
-  .fc-face-desc { font-size: 13.5px; }
-  .fc-nav-btn { padding: 10px 16px; font-size: 13px; }
+  /* Landing */
+  .fc-hero { padding: 28px 0 28px; }
+  .fc-hero-title { font-size: 22px; }
+  .fc-hero-desc { font-size: 14px; }
+  .fc-cat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fc-cat-card { padding: 18px 14px; gap: 10px; }
+  .fc-cat-count { font-size: 22px; }
+
+  /* Topbar */
+  .fc-topbar { gap: 8px; }
+  .fc-back-btn { padding: 7px 10px 7px 8px; font-size: 12px; }
+  .fc-progress-text { font-size: 12px; }
+  .fc-known-count { display: none; } /* 공간 부족 — 도트로 대체됨 */
+
+  /* Mode toggle */
+  .fc-mode-bar { width: 100%; }
+  .fc-mode-btn { flex: 1; justify-content: center; }
+
+  /* 카드 */
+  .fc-card {
+    height: 260px;
+    padding: 24px 20px;
+    gap: 16px;
+  }
+  .fc-card.flipped { padding-top: 20px; }
+  .fc-face-term { font-size: 26px; }
+  .fc-face-desc { font-size: 13.5px; line-height: 1.85; }
+
+  /* 설명 보기 카드 */
+  .fc-card-open { padding: 20px 18px; }
+  .fc-open-term { font-size: 18px; }
+  .fc-open-desc { font-size: 13.5px; }
+
+  /* 알아요 버튼 — 더 큰 터치 영역 */
+  .fc-known-btn { padding: 10px 28px; font-size: 14px; }
+
+  /* 네비 */
+  .fc-nav { gap: 8px; }
+  .fc-nav-btn { padding: 12px 16px; font-size: 13px; }
+  .fc-nav-btn svg { width: 16px; height: 16px; }
+
+  /* 키보드 힌트 숨김 */
   .fc-keyboard-hint { display: none; }
 }

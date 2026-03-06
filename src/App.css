@@ -111,10 +111,47 @@
   font-size: 13px;
 }
 
-/* ── Responsive ── */
+/* ── Mobile: bottom tab bar ── */
 @media (max-width: 640px) {
-  .logo-title { font-size: 14px; }
+  /* Header 축소 */
+  .header-inner { height: 48px; }
   .logo-sub { display: none; }
-  .nav-link { padding: 7px 12px; font-size: 13px; }
-  .main { padding: 20px 12px; }
+  .logo-icon { width: 30px; height: 30px; font-size: 14px; }
+  .logo-title { font-size: 14px; }
+
+  /* 상단 nav 숨기고 하단 탭바로 전환 */
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 200;
+    justify-content: space-around;
+    gap: 0;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+  }
+
+  .nav-link {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px 10px;
+    font-size: 10px;
+    gap: 4px;
+    border-radius: 0;
+    letter-spacing: 0.2px;
+  }
+
+  .nav-link svg { width: 22px; height: 22px; }
+
+  /* 탭바 높이만큼 main 패딩 */
+  .main {
+    padding: 16px 14px calc(60px + env(safe-area-inset-bottom) + 8px);
+  }
+
+  .footer { display: none; }
 }
