@@ -5,7 +5,7 @@ import './Quiz.css'
 const CATEGORIES = ['전체', '경영', '경제', '금융', '공공', '과학', '사회']
 
 function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5) }
-function normalize(str) { return str.trim().toLowerCase().replace(/\s+/g, ' ') }
+function normalize(str) { return str.trim().toLowerCase().replace(/\s+/g, '') }
 function stripParens(term) {
   return term.replace(/[(\[（【][^)\]）】]*[)\]）】]/g, '').replace(/\s+/g, ' ').trim()
 }
@@ -167,7 +167,7 @@ export default function Quiz() {
 
   // ── Active quiz ──
   const q = current
-  const coreTerm = stripParens(q.term)
+  const coreTerm = stripParens(q.term).replace(/\s+/g, '')
   const hint = coreTerm.length >= 2 ? coreTerm[0] + '_'.repeat(coreTerm.length - 1) : coreTerm[0]
   const isCorrect = submitted && checkAnswer(answer, q.term)
   const descContent = submitted ? q.description : maskTermInDesc(q.description, q.term)
@@ -227,7 +227,7 @@ export default function Quiz() {
         <div className="quiz-hint-row">
           {!showHint
             ? <button className="hint-btn" onClick={() => setShowHint(true)}>힌트 보기 (첫 글자)</button>
-            : <div className="hint-text">힌트: <strong>{hint}</strong> <span className="hint-len">({q.term.length}글자)</span></div>
+            : <div className="hint-text">힌트: <strong>{hint}</strong> <span className="hint-len">({q.term.replace(/\s+/g, '').length}글자)</span></div>
           }
         </div>
       )}
