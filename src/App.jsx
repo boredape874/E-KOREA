@@ -49,6 +49,9 @@ export default function App() {
       </main>
       <footer className="footer">
         <p>시사경제용어사전 · 총 3,031개 용어 · E-KOREA</p>
+        <p className="footer-source">
+          출처: 재정경제부_시사경제용어 정보_20200101 · 공공저작물 자유이용허락 (출처표시 + 변경금지, 제3유형)
+        </p>
       </footer>
     </div>
   )

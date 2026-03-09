@@ -110,6 +110,11 @@
   padding: 20px;
   font-size: 13px;
 }
+.footer-source {
+  margin-top: 4px;
+  font-size: 11px;
+  opacity: 0.6;
+}
 
 /* ── Mobile: bottom tab bar ── */
 @media (max-width: 640px) {
